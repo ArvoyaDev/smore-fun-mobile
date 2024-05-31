@@ -1,59 +1,85 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import * as Haptics from 'expo-haptics';
+import Spinner from 'react-native-loading-spinner-overlay';
 import { BlurView } from 'expo-blur';
 import { View, TextInput, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Linking } from 'react-native';
-import { ImageBackground } from 'react-native';
+import Alerts from './alerts';
+import Campsites from './campsites';
 import axios from 'axios';
 
-const App = () => {
+const App = ({ home, tree, bell, setSearched, setSearchFalse, iconClicked }) => {
   const [city, setCity] = useState('');
   const [info, setInfo] = useState(null);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+
+  useEffect(() => {
+    if (info) {
+      setSearched();
+    }
+  }, [info]);
+
 
   const handleSubmit = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setLoading(true); // Set loading to true before starting the async operation
     try {
-      const response = await axios.get(`http://localhost:3001/api/city-info?city=${city}`);
+      const response = await axios.get(`http://10.0.0.108:3001/api/city-info?city=${city}`);
       setInfo(response.data);
       setError('');
     } catch (error) {
       setInfo(null);
       setError('Error: City not found or backend issue');
     }
+    setLoading(false);
   };
 
   return (
-    <ImageBackground source={require('../../assets/background.png')} style={styles.background} >
+    <View>
       <View style={{ margin: 'auto', }} >
-        <Image source={require('../../assets/logo.png')} style={{ width: 300, marginTop: 50 }} resizeMode="contain" />
+        <TouchableOpacity onPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          setCity(''); setInfo(null); setSearchFalse(); iconClicked('home')
+        }}>
+          <Image source={require('../../assets/logo-g.png')} style={{ width: 300, marginTop: 50 }} resizeMode="contain" />
+        </TouchableOpacity>
       </View>
       <ScrollView contentContainerStyle={styles.container}>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter city name"
-          onChangeText={text => setCity(text)}
-          value={city}
-        />
-        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>Submit</Text>
-        </TouchableOpacity>
+        {home ?
+          <>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter city name"
+              onChangeText={text => setCity(text)}
+              value={city}
+            />
+            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+              <Text style={styles.buttonText}>Submit</Text>
+            </TouchableOpacity>
+            <Spinner
+              visible={loading}
+              textContent={'Loading...'}
+              textStyle={{ ...styles.spinnerTextStyle, color: 'white' }}
+              color='black'
+            />
+          </>
+          : null}
         {error ? <Text style={styles.error}>{error}</Text> : null}
         {info ? (
           <>
-            <Tips tips={info.chatGPT} />
-            <Weather weather={info.weather} />
-            <Alerts alerts={info.alerts} />
-            <Campsites campsites={info.campsites} />
+            {home ? <Tips tips={info.chatGPT} /> : null}
+            {home ? <Weather weather={info.weather} /> : null}
+            {tree ? <Campsites campsites={info.campsites} /> : null}
+            {bell ? <Alerts alerts={info.alerts} /> : null}
           </>
         ) : null}
       </ScrollView>
-    </ImageBackground >
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    resizeMode: 'cover',
-  },
   container: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -63,6 +89,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     marginBottom: 20,
+  },
+  spinnerTextStyle: {
+    color: 'white',
   },
   input: {
     height: 40,
@@ -90,7 +119,7 @@ const styles = StyleSheet.create({
   tipsContainer: {
     marginTop: 20,
     padding: 10,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: 'rgba(255, 255, 255, 0.26)',
     borderRadius: 5,
   },
   tipsText: {
@@ -99,8 +128,8 @@ const styles = StyleSheet.create({
   weatherContainer: {
     marginTop: 20,
     width: '100%',
-    borderRadius: 500,
     backgroundColor: 'rgba(255, 255, 255, 0.26)',
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.31)',
   },
@@ -128,65 +157,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'right',
   },
-  alertsContainer: {
-    marginTop: 20,
-    width: '100%',
-  },
-  alertItem: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
-  },
-  alertTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  alertCategory: {
-    fontSize: 14,
-    fontStyle: 'italic',
-  },
-  alertDescription: {
-    fontSize: 14,
-  },
-  alertLink: {
-    color: 'blue',
-    marginTop: 5,
-  },
-  campsitesContainer: {
-    marginTop: 20,
-    width: '100%',
-  },
-  campsiteItem: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
-  },
-  campsiteTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  campsiteDescription: {
-    fontSize: 14,
-  },
-  campsiteWeather: {
-    fontSize: 14,
-  },
-  campsiteDistance: {
-    fontSize: 14,
-  },
-  campsiteDuration: {
-    fontSize: 14,
-  },
-  campsiteLink: {
-    color: 'blue',
-    marginTop: 5,
-  },
 });
 
 const Tips = ({ tips }) => (
-  <View style={styles.tipsContainer}>
+  <BlurView
+    style={styles.tipsContainer}
+    blurType="light"
+    blurAmount={1}
+    reducedTransparencyFallbackColor="white"
+  >
     <Text style={styles.tipsText}>{tips}</Text>
-  </View>
+  </BlurView>
 );
 
 const Weather = ({ weather }) => (
@@ -205,38 +186,6 @@ const Weather = ({ weather }) => (
       </View>
     ))}
   </BlurView>
-);
-
-const Alerts = ({ alerts }) => (
-  <View style={styles.alertsContainer}>
-    {alerts.map((alert, index) => (
-      <View key={index} style={styles.alertItem}>
-        <Text style={styles.alertTitle}>{alert.title}</Text>
-        <Text style={styles.alertCategory}>{alert.category}</Text>
-        <Text style={styles.alertDescription}>{alert.description}</Text>
-        {alert.url ? (
-          <Text style={styles.alertLink} onPress={() => Linking.openURL(alert.url)}>More Info</Text>
-        ) : null}
-      </View>
-    ))}
-  </View>
-);
-
-const Campsites = ({ campsites }) => (
-  <View style={styles.campsitesContainer}>
-    {campsites.map((campsite, index) => (
-      <View key={index} style={styles.campsiteItem}>
-        <Text style={styles.campsiteTitle}>{campsite.title}</Text>
-        <Text style={styles.campsiteDescription}>{campsite.description}</Text>
-        <Text style={styles.campsiteWeather}>Weather: {campsite.weather}</Text>
-        <Text style={styles.campsiteDistance}>Distance: {campsite.distance} miles</Text>
-        <Text style={styles.campsiteDuration}>Duration: {campsite.duration}</Text>
-        {campsite.reservationUrl ? (
-          <Text style={styles.campsiteLink} onPress={() => Linking.openURL(campsite.reservationUrl)}>Reservation Info</Text>
-        ) : null}
-      </View>
-    ))}
-  </View>
 );
 
 export default App;

@@ -1,6 +1,6 @@
 {
   "expo": {
-    "entryPoint": "./app/index.tsx",
+    "entryPoint": "App.tsx",
     "name": "smoreFunMobile",
     "slug": "smoreFunMobile",
     "version": "1.0.0",
