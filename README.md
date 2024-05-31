@@ -2,6 +2,8 @@
 
 Smore Fun but on your phone!
 
+![Smore Fun Mobile App](./assets/sim.gif)
+
 ## Getting Started
 
 ### Requirements
