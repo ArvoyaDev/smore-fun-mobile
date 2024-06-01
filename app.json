@@ -21,7 +21,8 @@
       "adaptiveIcon": {
         "foregroundImage": "",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.ichaidez.smoreFunMobile"
     },
     "web": {
       "bundler": "metro",

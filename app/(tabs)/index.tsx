@@ -25,7 +25,7 @@ const App = ({ home, tree, bell, setSearched, setSearchFalse, iconClicked }) => 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setLoading(true); // Set loading to true before starting the async operation
     try {
-      const response = await axios.get(`http://10.0.0.108:3001/api/city-info?city=${city}`);
+      const response = await axios.get(`http://localhost:3001/api/city-info?city=${city}`);
       setInfo(response.data);
       setError('');
     } catch (error) {
@@ -170,22 +170,26 @@ const Tips = ({ tips }) => (
   </BlurView>
 );
 
-const Weather = ({ weather }) => (
-  <BlurView
+const Weather = ({ weather }) => {
+
+  return <BlurView
     style={styles.weatherContainer}
     blurType="light"
     blurAmount={5}
     reducedTransparencyFallbackColor="white"
   >
-    {weather.map((day, index) => (
-      <View key={index} style={styles.weatherItem}>
+    {weather.map((day, index) => {
+
+      let farehnheit = Math.round((day.temp * 9 / 5) + 32);
+
+      return <View key={index} style={styles.weatherItem}>
         <Text style={styles.weatherDate}>{day.date}</Text>
         <Image source={{ uri: day.img }} style={styles.weatherIcon} />
         <Text style={styles.weatherDescription}>{day.description}</Text>
-        <Text style={styles.weatherTemp}>{day.temp}°C</Text>
+        <Text style={styles.weatherTemp}>{farehnheit}°F</Text>
       </View>
-    ))}
+    })}
   </BlurView>
-);
+};
 
 export default App;
