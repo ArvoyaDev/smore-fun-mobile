@@ -2,9 +2,9 @@
 
 TDeployed Site: [S'more Fun](https://smore-fun.herokuapp.com/)
 
-Backend Repoo: [Backend](https://github.com/ArvoyaDev/smore-fun-back-end)
-
 Frontend Repo: [Frontend](https://github.com/ArvoyaDev/smore-fun-front-end)
+
+Backend Repo: [Backend](https://github.com/ArvoyaDev/smore-fun-back-end)
 
 ![Smore Fun Mobile App](./assets/sim.gif)
 
