@@ -1,6 +1,6 @@
 # Smore Fun Mobile App!
 
-TDeployed Site: [S'more Fun](https://smore-fun.herokuapp.com/)
+Deployed Site: [S'more Fun](https://smore-fun.herokuapp.com/)
 
 Frontend Repo: [Frontend](https://github.com/ArvoyaDev/smore-fun-front-end)
 
