@@ -1,6 +1,10 @@
 # Smore Fun Mobile App!
 
-Smore Fun but on your phone!
+TDeployed Site: [S'more Fun](https://smore-fun.herokuapp.com/)
+
+Backend Repoo: [Backend](https://github.com/ArvoyaDev/smore-fun-back-end)
+
+Frontend Repo: [Frontend](https://github.com/ArvoyaDev/smore-fun-front-end)
 
 ![Smore Fun Mobile App](./assets/sim.gif)
 
